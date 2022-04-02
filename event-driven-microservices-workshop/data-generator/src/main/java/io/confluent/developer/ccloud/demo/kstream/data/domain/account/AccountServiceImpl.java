@@ -27,7 +27,7 @@ public class AccountServiceImpl implements AccountService {
 
   public AccountServiceImpl(AccountRepository accountRepository,
                             @Value("${datafaker.account.starting-account-number:0}") int startingAccountNumber,
-                            @Value("${datafaker.account.numbers:1000}") int numbersOfAccount) {
+                            @Value("${datafaker.account.numbers:1000000}") int numbersOfAccount) {
     this.accountRepository = accountRepository;
 
     this.startingAccountNumber = startingAccountNumber;
@@ -51,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
                                   faker.address().city(),
                                   faker.address().country(), LocalDateTime.now(), LocalDateTime.now()))
 
-        .buffer(10000)
+        .buffer(100)
         .doOnNext(accountRepository::saveAll)
         .doOnNext(accounts -> log.info("Generated account number {}.", accounts.get(accounts.size() - 1).getNumber()))
         .retryWhen(backoff(10, ofSeconds(1)))
