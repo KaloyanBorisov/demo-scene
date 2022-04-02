@@ -1,0 +1,48 @@
+# curl requests
+scripts/generate-transaction.sh 1 DEPOSIT 100 CAD
+scripts/generate-transaction.sh 1 DEPOSIT 200 CAD
+scripts/generate-transaction.sh 1 DEPOSIT 300 CAD
+scripts/generate-transaction.sh 1 WITHDRAW 300 CAD
+scripts/generate-transaction.sh 1 WITHDRAW 10000 CAD
+scripts/generate-transaction.sh 2 DEPOSIT 100 CAD
+scripts/generate-transaction.sh 2 DEPOSIT 50 CAD
+scripts/generate-transaction.sh 2 DEPOSIT 300 CAD
+scripts/generate-transaction.sh 2 WITHDRAW 300 CAD
+
+#ksqldb operations
+docker run -it confluentinc/ksqldb-cli:0.6.0
+ksql http://172.18.0.4:8088 // check container's IP
+
+CREATE TABLE ACCOUNT (
+  rowkey string  KEY,
+  number INT,
+  cityAddress STRING,
+  countryAddress STRING,
+  creationDate BIGINT,
+  firstName STRING,
+  lastName STRING,
+  numberAddress STRING,
+  streetAddress STRING,
+  updateDate BIGINT
+) WITH (
+  KAFKA_TOPIC = 'account',
+  VALUE_FORMAT='JSON'
+);
+
+
+CREATE STREAM TRANSACTION_SUCCESS (
+  rowkey string KEY,
+  transaction STRUCT<guid STRING, account STRING, amount DOUBLE, type STRING, currency STRING, country STRING>,
+  funds STRUCT<account STRING, balance DOUBLE>,
+  success boolean,
+  errorType STRING
+) WITH (
+  kafka_topic='transaction-success',
+  value_format='json'
+);
+
+CREATE STREAM TRANSACTION_STATEMENT AS
+  SELECT *
+  FROM TRANSACTION_SUCCESS
+  LEFT JOIN ACCOUNT ON TRANSACTION_SUCCESS.rowkey = ACCOUNT.rowkey
+  EMIT CHANGES;
