@@ -2,6 +2,8 @@
 
 ![Screenshot](Screenshot.png)
 
+[![Pickup Data talk at JFokus](talk_screenshot.png)](https://www.youtube.com/watch?v=uFtJH-kINgg)
+
 ## Server Setup
 
 First start the server processes running:
@@ -33,7 +35,6 @@ This should end with output similar to:
  MOVEMENT_COMMANDS   | movement_commands             | KAFKA      | AVRO         | false    
  RESPONSES           | responses                     | KAFKA      | AVRO         | false    
  STATUS_COMMANDS     | status_commands               | KAFKA      | AVRO         | false    
-
 ```
 
 
